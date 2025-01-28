@@ -1,0 +1,32 @@
+{% for evpn in evpns %}
+{% if evpn.mode == "vlan_based" %}
+set routing-instances {{ evpn.name }} instance-type evpn
+set routing-instances {{ evpn.name }} vlan-id {{ evpn.vlan }}
+set routing-instances {{ evpn.name }} route-distinguisher {{ evpn.rd }}
+set routing-instances {{ evpn.name }} vrf-target {{ evpn.target }}
+set routing-instances {{ evpn.name }} protocols evpn 
+{% for int in evpn.attachment_circuits %}
+set interfaces {{ int.name }} flexible-vlan-tagging
+set interfaces {{ int.name }} encapsulation flexible-ethernet-services
+set interfaces {{ int.name }} unit {{ int.unit }} encapsulation vlan-bridge
+set interfaces {{ int.name }} unit {{ int.unit }} vlan-id {{ evpn.vlan }}
+set interfaces {{ int.name }} unit {{ int.unit }} family bridge
+set routing-instances {{ evpn.name }} interface {{ int.name }}.{{ int.unit }}
+{% endfor %}
+{% elif evpn.mode == "vlan_aware" %}
+set routing-instances {{ evpn.name }} instance-type virtual-switch
+set routing-instances {{ evpn.name }} protocols evpn extended-vlan-list {{ evpn.vlan_list }}
+{% for bd in evpn.bridge_domains %}
+set routing-instances {{ evpn.name }} bridge-domains {{ bd.name }} vlan-id {{ bd.vlan }}
+{% endfor %}
+set routing-instances {{ evpn.name }} route-distinguisher {{ evpn.rd }}
+set routing-instances {{ evpn.name }} vrf-target {{ evpn.target }}
+{% for int in evpn.attachment_circuits %}
+set interfaces {{ int.name }} flexible-vlan-tagging
+set interfaces {{ int.name }} encapsulation flexible-ethernet-services
+set interfaces {{ int.name }} unit 0 family bridge interface-mode {{ int.mode }}
+set interfaces {{ int.name }} unit 0 family bridge vlan-id-list {{ int.vlan_list }}
+set routing-instances {{ evpn.name }} interface {{ int.name }}.{{ int.unit }}
+{% endfor %}
+{% endif %}
+{% endfor %}

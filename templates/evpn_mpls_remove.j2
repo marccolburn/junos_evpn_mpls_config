@@ -1,0 +1,8 @@
+{% for evpn in evpns %}
+delete routing-instances {{ evpn.name }} 
+{% for int in evpn.attachment_circuits %}
+delete interfaces {{ int.name }} flexible-vlan-tagging
+delete interfaces {{ int.name }} encapsulation flexible-ethernet-services
+delete interfaces {{ int.name }} unit {{ int.unit }} 
+{% endfor %}
+{% endfor %}
