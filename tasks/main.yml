@@ -13,7 +13,7 @@
 
 - name: Generate EVPN MPLS Configuration (EVO)
   junos_config:
-    lines: "{{ lookup('template', 'mac_vrf_config.j2').split('\n') }}"
+    lines: "{{ lookup('template', 'mac_vrf_evpn_config.j2').split('\n') }}"
     comment: "Configured EVPN MPLS"
   when: evpn_mpls_remove == False and routing_instance_type == 'mac_vrf'
 
