@@ -14,6 +14,7 @@ set routing-instances {{ evpn.name }} service-type vlan-based
 {% for bridge_domain in evpn.bridge_domains %}
 {% if bridge_domain.vlan != 'none' %}
 set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} vlan-id {{ bridge_domain.vlan }}
+set interfaces {{ int.name }} unit {{ int.unit }} vlan-id {{ bridge_domain.vlan }}
 {% endif %}
 {% for int in bridge_domain.interfaces %}
 set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} interface {{ int.name }}
@@ -24,7 +25,6 @@ set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} interface {
 set interfaces {{ int.name }} flexible-vlan-tagging
 set interfaces {{ int.name }} encapsulation flexible-ethernet-services
 set interfaces {{ int.name }} unit {{ int.unit }} encapsulation vlan-bridge
-set interfaces {{ int.name }} unit {{ int.unit }} vlan-id {{ evpn.vlan }}
 set interfaces {{ int.name }} unit {{ int.unit }} family ethernet-switching
 {% else %}
 set interfaces {{ int.name }} encapsulation ethernet-bridge
