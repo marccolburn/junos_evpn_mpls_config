@@ -1,0 +1,32 @@
+{% for evpn in evpns %}
+set routing-instances {{ evpn.name }} instance-type mac-vrf
+set routing-instances {{ evpn.name }} protocols evpn encapsulation mpls
+set routing-instances {{ evpn.name }} route-distinguisher {{ evpn.rd }}
+set routing-instances {{ evpn.name }} vrf-target {{ evpn.target }}
+{% if evpn.import_policy is defined %}
+set routing-instances {{ evpn.name }} vrf-import {{ evpn.import_policy.name }} 
+{% endif %}
+{% if evpn.export_policy is defined %}
+set routing-instances {{ evpn.name }} vrf-export {{ evpn.export_policy.name }} 
+{% endif %}
+{% if evpn.mode == "vlan_based" %}
+set routing-instances {{ evpn.name }} service-type vlan-based
+{% for bridge_domain in evpn.bridge_domains %}
+set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} vlan-id {{ bridge_domain.vlan }}
+{% for int in bridge_domain.interfaces %}
+set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} interface {{ int.name }}
+{% endfor %}
+{% endfor %}
+{% for int in evpn.attachment_circuits %}
+{% if int.untagged is not defined %}
+set interfaces {{ int.name }} flexible-vlan-tagging
+set interfaces {{ int.name }} encapsulation flexible-ethernet-services
+set interfaces {{ int.name }} unit {{ int.unit }} encapsulation vlan-bridge
+set interfaces {{ int.name }} unit {{ int.unit }} vlan-id {{ evpn.vlan }}
+set interfaces {{ int.name }} unit {{ int.unit }} family ethernet-switching
+{% else %}
+set interfaces {{ int.name }} encapsulation ethernet-bridge
+set interfaces {{ int.name }} unit 0 family ethernet-switching
+{% endif %}
+{% endfor %}
+{% endfor %}

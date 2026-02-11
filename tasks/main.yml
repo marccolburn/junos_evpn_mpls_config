@@ -3,16 +3,22 @@
   template:
     src: "evpn_mpls_config.j2"
     dest: "debug_configs/{{ inventory_hostname}}_evpn_mpls_config.txt"
+  when: routing_instance_type == 'evpn'
 
 - name: Generate EVPN MPLS Configuration
   junos_config:
     lines: "{{ lookup('template', 'evpn_mpls_config.j2').split('\n') }}"
     comment: "Configured EVPN MPLS"
-  when: evpn_mpls_remove == False
+  when: evpn_mpls_remove == False and routing_instance_type == 'evpn'
+
+- name: Generate EVPN MPLS Configuration (EVO)
+  junos_config:
+    lines: "{{ lookup('template', 'mac_vrf_config.j2').split('\n') }}"
+    comment: "Configured EVPN MPLS"
+  when: evpn_mpls_remove == False and routing_instance_type == 'mac_vrf'
 
 - name: Remove EVPN MPLS Configuration
   junos_config:
     lines: "{{ lookup('template', 'evpn_mpls_remove.j2').split('\n') }}"
     comment: "Removed EVPN MPLS"
   when: evpn_mpls_remove == True
-
