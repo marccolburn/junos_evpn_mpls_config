@@ -12,7 +12,9 @@ set routing-instances {{ evpn.name }} vrf-export {{ evpn.export_policy.name }}
 {% if evpn.mode == "vlan_based" %}
 set routing-instances {{ evpn.name }} service-type vlan-based
 {% for bridge_domain in evpn.bridge_domains %}
+{% if bridge_domain.vlan != 'none' %}
 set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} vlan-id {{ bridge_domain.vlan }}
+{% endif %}
 {% for int in bridge_domain.interfaces %}
 set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} interface {{ int.name }}
 {% endfor %}
