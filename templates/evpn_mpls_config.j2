@@ -29,4 +29,7 @@ set interfaces {{ int.name }} unit 0 family bridge vlan-id-list {{ int.vlan_list
 set routing-instances {{ evpn.name }} interface {{ int.name }}.{{ int.unit }}
 {% endfor %}
 {% endif %}
+{% if evpn.no_normalization is defined %}
+set routing-instances {{ evpn.name }} no-normalization
+{% endif %} 
 {% endfor %}
