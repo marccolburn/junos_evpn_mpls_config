@@ -2,8 +2,6 @@
 {% if evpn.mode == "vlan_based" %}
 set routing-instances {{ evpn.name }} instance-type evpn
 set routing-instances {{ evpn.name }} vlan-id {{ evpn.vlan }}
-set routing-instances {{ evpn.name }} route-distinguisher {{ evpn.rd }}
-set routing-instances {{ evpn.name }} vrf-target {{ evpn.target }}
 set routing-instances {{ evpn.name }} protocols evpn 
 {% for int in evpn.attachment_circuits %}
 set interfaces {{ int.name }} flexible-vlan-tagging
@@ -19,8 +17,6 @@ set routing-instances {{ evpn.name }} protocols evpn extended-vlan-list {{ evpn.
 {% for bd in evpn.bridge_domains %}
 set routing-instances {{ evpn.name }} bridge-domains {{ bd.name }} vlan-id {{ bd.vlan }}
 {% endfor %}
-set routing-instances {{ evpn.name }} route-distinguisher {{ evpn.rd }}
-set routing-instances {{ evpn.name }} vrf-target {{ evpn.target }}
 {% for int in evpn.attachment_circuits %}
 set interfaces {{ int.name }} flexible-vlan-tagging
 set interfaces {{ int.name }} encapsulation flexible-ethernet-services
@@ -32,4 +28,12 @@ set routing-instances {{ evpn.name }} interface {{ int.name }}.{{ int.unit }}
 {% if evpn.no_normalization is defined %}
 set routing-instances {{ evpn.name }} no-normalization
 {% endif %} 
+{% if evpn.import_policy is defined %}
+set routing-instances {{ evpn.name }} vrf-import {{ evpn.import_policy.name }} 
+{% endif %}
+{% if evpn.export_policy is defined %}
+set routing-instances {{ evpn.name }} vrf-export {{ evpn.export_policy.name }} 
+{% endif %}
+set routing-instances {{ evpn.name }} route-distinguisher {{ evpn.rd }}
+set routing-instances {{ evpn.name }} vrf-target {{ evpn.target }}
 {% endfor %}
