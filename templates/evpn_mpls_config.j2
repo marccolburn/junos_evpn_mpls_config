@@ -4,12 +4,18 @@ set routing-instances {{ evpn.name }} instance-type evpn
 set routing-instances {{ evpn.name }} vlan-id {{ evpn.vlan }}
 set routing-instances {{ evpn.name }} protocols evpn 
 {% for int in evpn.attachment_circuits %}
+{% if int.untagged is not defined %}
 set interfaces {{ int.name }} flexible-vlan-tagging
 set interfaces {{ int.name }} encapsulation flexible-ethernet-services
 set interfaces {{ int.name }} unit {{ int.unit }} encapsulation vlan-bridge
 set interfaces {{ int.name }} unit {{ int.unit }} vlan-id {{ evpn.vlan }}
 set interfaces {{ int.name }} unit {{ int.unit }} family bridge
 set routing-instances {{ evpn.name }} interface {{ int.name }}.{{ int.unit }}
+{% else %}
+set interfaces {{ int.name }} encapsulation ethernet-bridge
+set interfaces {{ int.name }} unit 0 family bridge
+set routing-instances {{ evpn.name }} interface {{ int.name }}.0
+{% endif %}
 {% endfor %}
 {% elif evpn.mode == "vlan_aware" %}
 set routing-instances {{ evpn.name }} instance-type virtual-switch
