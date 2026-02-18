@@ -17,6 +17,9 @@ set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} vlan-id {{ 
 {% for int in bridge_domain.interfaces %}
 set routing-instances {{ evpn.name }} vlans {{ bridge_domain.name }} interface {{ int.name }}.{{ int.unit }}
 set interfaces {{ int.name }} unit {{ int.unit }} vlan-id {{ bridge_domain.vlan }}
+{% if int.mtu is defined %}
+set interfaces {{ int.name }} mtu {{ int.mtu }}
+{% endif }
 {% endfor %}
 {% else %}
 {% for int in bridge_domain.interfaces %}
