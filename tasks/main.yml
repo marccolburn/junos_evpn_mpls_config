@@ -21,4 +21,10 @@
   junos_config:
     lines: "{{ lookup('template', 'evpn_mpls_remove.j2').split('\n') }}"
     comment: "Removed EVPN MPLS"
-  when: evpn_mpls_remove == True
+  when: evpn_mpls_remove == True and routing_instance_type == 'evpn'
+
+- name: Remove EVPN MPLS Configuration (EVO)
+  junos_config:
+    lines: "{{ lookup('template', 'mac_vrf_evpn_remove.j2').split('\n') }}"
+    comment: "Configured EVPN MPLS"
+  when: evpn_mpls_remove == True and routing_instance_type == 'mac_vrf'

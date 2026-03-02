@@ -1,0 +1,22 @@
+{% for evpn in evpns %}
+delete routing-instances {{ evpn.name }} instance-type mac-vrf
+{% if evpn.mode == "vlan_based" %}
+{% for bridge_domain in evpn.bridge_domains %}
+{% if bridge_domain.vlan != 'none' %}
+{% for int in bridge_domain.interfaces %}
+delete interfaces {{ int.name }} unit {{ int.unit }} 
+{% if int.mtu is defined %}
+delete interfaces {{ int.name }} mtu {{ int.mtu }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% for int in evpn.attachment_circuits %}
+{% if int.untagged is not defined %}
+delete interfaces {{ int.name }} unit {{ int.unit }}
+{% else %}
+delete interfaces {{ int.name }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
