@@ -1,9 +1,27 @@
 ---
-- name: Generate Debug
+- name: Generate Config Debug
   template:
     src: "evpn_mpls_config.j2"
     dest: "debug_configs/{{ inventory_hostname}}_evpn_mpls_config.txt"
-  when: routing_instance_type == 'evpn'
+  when: evpn_mpls_remove == False and routing_instance_type == 'evpn'
+
+- name: Generate Config Debug (EVO)
+  template:
+    src: "mac_vrf_evpn_config.j2"
+    dest: "debug_configs/{{ inventory_hostname}}_evpn_mpls_config.txt"
+  when: evpn_mpls_remove == False and routing_instance_type == 'mac_vrf'
+
+- name: Generate Config Remove Debug
+  template:
+    src: "evpn_mpls_remove.j2"
+    dest: "debug_configs/{{ inventory_hostname}}_evpn_mpls_config.txt"
+  when: evpn_mpls_remove == True and routing_instance_type == 'evpn'
+
+- name: Generate Config Remove Debug (EVO)
+  template:
+    src: "mac_vrf_evpn_remove.j2"
+    dest: "debug_configs/{{ inventory_hostname}}_evpn_mpls_config.txt"
+  when: evpn_mpls_remove == True and routing_instance_type == 'mac_vrf'
 
 - name: Generate EVPN MPLS Configuration
   junos_config:
