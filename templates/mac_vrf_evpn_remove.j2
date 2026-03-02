@@ -1,5 +1,5 @@
 {% for evpn in evpns %}
-delete routing-instances {{ evpn.name }} instance-type mac-vrf
+delete routing-instances {{ evpn.name }}
 {% if evpn.mode == "vlan_based" %}
 {% for bridge_domain in evpn.bridge_domains %}
 {% if bridge_domain.vlan != 'none' %}
